@@ -76,7 +76,10 @@ int main(){
         }
         int u_r_lca = LCA(u, r);
         int v_r_lca = LCA(v, r);
-        if((v_r_lca != r && v_r_lca != v) && depth[v_r_lca] > depth[w]){
+        if(w != u && w != v && u_r_lca != u && u_r_lca != r && v_r_lca != v && v_r_lca != r){
+            printf("%d\n", depth[u_r_lca] > depth[v_r_lca] ? u_r_lca + 1 : v_r_lca + 1);
+            continue;
+        }else if((v_r_lca != r && v_r_lca != v) && depth[v_r_lca] > depth[w]){
             printf("%d\n", v_r_lca + 1);
             continue;
         }else if((u_r_lca != u && u_r_lca != v) && depth[u_r_lca] > depth[w]){
