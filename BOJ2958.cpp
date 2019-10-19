@@ -10,18 +10,33 @@ typedef pair<int, pair<int, int>> P2;
 typedef pair<int, int> P;
 
 const int INF = 1e9, MOD = 1e9 + 7;
-int N, M, a, b, c, dist[1501], cnt[5001], prev_edge[1501];
+int N, M, a, b, c, dist[1501], cnt[5001], in[1501], out[1501];
 vector<P2> adj[1501];
-P edge[5001];
+
+void dfs(int curr, int d){
+    if(out[curr] != 0) return;
+    out[curr] = 1;
+    for(P2 next : adj[curr]){
+        int next_dist = next.first + d;
+        int next_v = next.second.first;
+        int next_edge = next.second.second;
+        if(dist[next_v] != next_dist) continue;
+        dfs(next_v, next_dist);
+        out[curr] = out[curr] + out[next_v];
+        cnt[next_edge] = (cnt[next_edge] + in[curr] * out[next_v]) % MOD;
+    }
+}
 
 void dijkstra(int curr){
     for(int i = 0; i < N; i++){
         dist[i] = INF;
-        prev_edge[i] = -1;
+        in[i] = 0;
+        out[i] = 0;
     }
     priority_queue<P> pq;
     pq.push(P(0, curr));
     dist[curr] = 0;
+    in[curr] = 1;
     while(!pq.empty()){
         int curr_dist = -pq.top().first;
         int curr_v = pq.top().second;
@@ -31,24 +46,17 @@ void dijkstra(int curr){
             int next_dist = next.first + curr_dist;
             int next_v = next.second.first;
             int next_edge = next.second.second;
-            if(dist[next_v] > next_dist){
-                prev_edge[next_v] = next_edge;
-                dist[next_v] = next_dist;
-                pq.push(P(-next_dist, next_v));
+            if(dist[next_v] >= next_dist){
+                if(dist[next_v] > next_dist){
+                    in[next_v] = 0;
+                    dist[next_v] = next_dist;
+                    pq.push(P(-next_dist, next_v));
+                }
+                in[next_v] = (in[curr_v] + in[next_v]) % MOD;
             }
         }
     }
-    for(int i = 0; i < N; i++){
-        int curr_v = i;
-        if(curr == i) continue;
-        while(curr_v != curr){
-            int edge_idx = prev_edge[curr_v];
-            if(edge_idx == -1) break;
-            cnt[edge_idx]++;
-            cnt[edge_idx] %= MOD;
-            curr_v = edge[edge_idx].first;
-        }
-    }
+    dfs(curr, 0);
 }
 
 int main(){
@@ -56,7 +64,6 @@ int main(){
     for(int i = 0; i < M; i++){
         scanf("%d %d %d", &a, &b, &c);
         adj[a - 1].push_back(P2(c, {b - 1, i}));
-        edge[i] = P(a - 1, b - 1);
     }
     for(int i = 0; i < N; i++)
         dijkstra(i);
