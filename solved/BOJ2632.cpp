@@ -9,8 +9,7 @@ using namespace std;
 typedef long long ll;
 typedef vector<int> vi;
 
-int A, B, C, a[1001], b[1001], a_sum, b_sum, sum;
-map<int, int> m;
+int A, B, C, a[1001], b[1001], c[2000001], a_sum, b_sum, sum;
 ll ans;
 
 int main()
@@ -22,8 +21,8 @@ int main()
         cin >> a[i];
         a_sum += a[i];
     }
-    m[0]++;
-    m[a_sum]++;
+    c[0]++;
+    c[a_sum]++;
     for (int i = 0; i < A; i++)
     {
         sum = 0;
@@ -33,7 +32,7 @@ int main()
                 sum += a[i + j - A];
             else
                 sum += a[i + j];
-            m[sum]++;
+            c[sum]++;
         }
     }
     for(int i = 0; i < B; i++){
@@ -49,9 +48,12 @@ int main()
                 sum += b[i + j - B];
             else
                 sum += b[i + j];
-            ans += m[C - sum];
+            if(C - sum >= 0)
+            ans += c[C - sum];
         }
     }
-    cout << ans + m[C - b_sum] + m[C];
+    if(C - b_sum >= 0)
+        ans += c[C - b_sum];
+    cout << ans + c[C];
     return 0;
 }
