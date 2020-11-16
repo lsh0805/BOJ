@@ -1,31 +1,28 @@
 #include <iostream>
-#include <algorithm>
 
 using namespace std;
 
-typedef long long ll;
-int R, C, m[21][21], dx[4] = {-1, 0, 0, 1}, dy[4] = {0, -1, 1, 0}, ans;
-char c;
+int N, a[2001], Q, S, E, dp[2001][2001];
 
-void dfs(int y, int x, int visit, int level){
-    ans = max(ans, level);
-    for(int i = 0; i < 4; i++){
-        int n_y = y + dy[i];
-        int n_x = x + dx[i];
-        if(n_y < 0 || n_y >= R || n_x < 0 || n_x >= C) continue;
-        if((visit & (1 << m[n_y][n_x])) == 0)
-            dfs(n_y, n_x, visit | (1 << m[n_y][n_x]), level + 1);
-    }
-}
-
-int main(){
-    ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
-    cin >> R >> C;
-    for(int i = 0; i < R; i++)
-        for(int j = 0; j < C; j++){
-            cin >> c;
-            m[i][j] = c - 'A';
-        }
-    dfs(0, 0, 1 << m[0][0], 1);
-    cout << ans;
+int main() {
+	ios::sync_with_stdio(false); cin.tie(0); cout.tie(0);
+	cin >> N;
+	for(int i = 0; i < N; i++){
+		cin >> a[i];
+		dp[i][0] = true;
+	}
+	cin >> Q;
+	for(int j = 1; j < N; j++){
+		for(int i = 0; i + j < N; i++){
+			if(j == 1)
+				dp[i][j] = (a[i] == a[i + j]);
+			else
+				dp[i][j] = (a[i] == a[i + j]) && dp[i + 1][j - 2];
+		}
+	}
+	for(int i = 0; i < Q; i++){
+		cin >> S >> E;
+		cout << dp[S - 1][E - S] << "\n";
+	}
+	return 0;
 }
