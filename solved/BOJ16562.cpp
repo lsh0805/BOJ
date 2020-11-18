@@ -2,46 +2,41 @@
 
 using namespace std;
 
-#define mp make_pair
-#define pb push_back
-#define fi first
-#define se second
 typedef long long ll;
-typedef vector<int> vi;
 
-int N, M, K, a[10001], v, w, visited[10001];
-vector<vector<int>> adj;
+int N, M, k, A[10001], v, w, visited[10001], cnt, ans;
+vector<vector<int>> f;
 
 int dfs(int curr){
+    cnt++;
+    int ret = A[curr];
     visited[curr] = true;
-    int ret = a[curr];
-    for(int next : adj[curr]){
-        if(visited[next] == false)
-            ret = min(ret, dfs(next));
+    for(int next : f[curr]){
+        if(visited[next]) continue;
+        ret = min(ret, dfs(next));
     }
     return ret;
 }
 
 int main(){
-    cin.tie(0);
-    ios::sync_with_stdio(false);
-    cin >> N >> M >> K;
-    adj.resize(N);
+    ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
+    cin >> N >> M >> k;
     for(int i = 0; i < N; i++)
-        cin >> a[i];
+        cin >> A[i];
+    f = vector<vector<int>>(N);
     for(int i = 0; i < M; i++){
         cin >> v >> w;
         v--, w--;
-        adj[v].push_back(w);
-        adj[w].push_back(v);
+        f[v].push_back(w);
+        f[w].push_back(v);
     }
-    int sum = 0;
     for(int i = 0; i < N; i++)
-        if(visited[i] == false)
-            sum += dfs(i);
-    if(sum > K)
+        if(!visited[i])
+            ans += dfs(i);
+    if(cnt != N || k < ans){
         cout << "Oh no";
-    else
-        cout << sum;
-    return 0;
+        return 0;
+    }else{
+        cout << ans;
+    }
 }
