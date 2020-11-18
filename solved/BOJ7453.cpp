@@ -2,35 +2,27 @@
 
 using namespace std;
 
-#define mp make_pair
-#define pb push_back
-#define fi first
-#define se second
 typedef long long ll;
-typedef vector<int> vi;
 
-int N, arr[4][4001];
-long long ans;
+int arr[4][4001], N;
+ll ans;
 vector<int> v;
+
 int main(){
-    cin.tie(0);
-    ios::sync_with_stdio(false);
+    ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
     cin >> N;
-    for(int j = 0; j < N; j++)
-        for(int i = 0; i < 4; i++)
-            cin >> arr[i][j];
+    for(int i = 0; i < N; i++)
+        for(int j = 0; j < 4; j++)
+            cin >> arr[j][i];
     for(int i = 0; i < N; i++)
         for(int j = 0; j < N; j++)
-            v.push_back(arr[0][i] + arr[1][j]);
+            v.push_back(-(arr[0][i] + arr[1][j]));
     sort(v.begin(), v.end());
     for(int i = 0; i < N; i++)
         for(int j = 0; j < N; j++){
-            int oppo = -(arr[2][i] + arr[3][j]);
-            auto it = lower_bound(v.begin(), v.end(), oppo);
-            if(it == v.end()) continue;
-            if(*it == oppo)
-                ans += upper_bound(v.begin(), v.end(), oppo) - it;
+            auto lower_it = lower_bound(v.begin(), v.end(), arr[2][i] + arr[3][j]);
+            auto upper_it = upper_bound(v.begin(), v.end(), arr[2][i] + arr[3][j]);
+            ans += upper_it - lower_it;
         }
-    cout << ans;
-    return 0;
+    cout << ans << "\n";
 }
