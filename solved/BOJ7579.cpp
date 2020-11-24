@@ -2,36 +2,42 @@
 
 using namespace std;
 
-int N, M, c[101], sum, ans;
-long long a[101], dp[101][10001];
+#define fi first
+#define se second
 
-long long  process(int idx, int remain){
-    long long  & ret = dp[idx][remain];
-    if(remain - c[idx] < 0) return 0;
-    if(ret != 0)
-        return ret;
-    ret = a[idx];
-    for(int i = idx + 1; i < N; i++)
-        ret = max(ret, process(i, remain - c[idx]) + a[idx]);
+typedef long long ll;
+typedef pair<int, int> P;
+typedef pair<int, pair<int, int>> P2;
+
+int dp[10000][101], N, M, m[101], c[101];
+
+int solve(int remain, int idx){
+    int & ret = dp[remain][idx];
+    if(ret != 0) return ret;
+    ret = m[idx];
+    for(int i = idx + 1; i < N; i++){
+        if(remain >= c[i])
+            ret = max(ret, solve(remain - c[i], i) + m[idx]);
+    }
     return ret;
 }
 
 int main(){
+    ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
     cin >> N >> M;
     for(int i = 0; i < N; i++)
-        cin >> a[i];
-    for(int i = 0; i < N; i++){
+        cin >> m[i];
+    for(int i = 0; i < N; i++)
         cin >> c[i];
-        sum += c[i];
+    int ans = 0;
+    for(int i = 10000; i >= 0; i--){
+        int max_ = 0;
+        for(int j = 0; j < N; j++){
+            if(c[j] <= i)
+                max_ = max(max_, solve(i - c[j], j));
+        }
+        if(max_ >= M)
+            ans = i;
     }
-    for(int j = 0; j <= sum; j++)
-        for(int i = 0; i < N; i++)
-            process(i, j);
-    for(int j = 0; j <= sum; j++)
-        for(int i = 0; i < N; i++)
-            if(dp[i][j] >= M){
-                cout << j;
-                return 0;
-            }
-    return 0;
+    cout << ans;
 }
