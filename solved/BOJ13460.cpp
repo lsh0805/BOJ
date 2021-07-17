@@ -2,134 +2,99 @@
 
 using namespace std;
 
-#define x first
-#define y second
+#define fi first
+#define se second
+#define ll long long
 
-typedef long long ll;
 typedef pair<int, int> P;
-typedef pair<int, pair<int, int>> P2;
-typedef pair<pair<int, int>, pair<int, int>> PP;
-int N, M, r_x, r_y, b_x, b_y, dx[4] = {0, 0, -1, 1}, dy[4] = {-1, 1, 0, 0}, ans = -1;
-char m[11][11];
-queue<PP> q;
+typedef pair<P, P> PP;
 
-PP proceed(PP status, int dir){
-    P red = status.x;
-    P blue = status.y;
-    int first_move = 0;
-    bool red_fall = false;
-    bool blue_fall = false;
-    // 누구부터 움직일 지
-    switch (dir)
-    {
-    case 0:
-        first_move = red.y < blue.y ? 0 : 1;
-        break;
-    case 1:
-        first_move = red.y >= blue.y ? 0 : 1;
-        break;
-    case 2:
-        first_move = red.x < blue.x ? 0 : 1;
-        break;
-    case 3:
-        first_move = red.x >= blue.x ? 0 : 1;
-        break;
-    default:
-        break;
-    } 
+const int INF = 2e9;
+const int R = 0;
+const int B = 1;
+int N, M, dx[4] = {0, 0, -1, 1}, dy[4] = {-1, 1, 0, 0}, ans = INF;
+char m[10][10];
+P pos[2];
 
-    if(first_move == 0){
-        // red
-        while(true){
-            int nx = red.x + dx[dir];
-            int ny = red.y + dy[dir];
-            if(m[ny][nx] == 'O'){
-                red_fall = true;
-                red = P(-1, -1);
-                break;
-            }
-            if(nx < 0 || nx >= M || ny < 0 || ny >= N || P(nx, ny) == blue ||m[ny][nx] != '.') break;
-            red.x = nx;
-            red.y = ny;
-        }
-        // blue
-        while(true){
-            int nx = blue.x + dx[dir];
-            int ny = blue.y + dy[dir];
-            if(m[ny][nx] == 'O'){
-                blue_fall = true;
-                blue = P(-1, -1);
-                break;
-            }
-            if(nx < 0 || nx >= M || ny < 0 || ny >= N || P(nx, ny) == red || m[ny][nx] != '.') break;
-            blue.x = nx;
-            blue.y = ny;
-        }
-    }else{
-        // blue
-        while(true){
-            int nx = blue.x + dx[dir];
-            int ny = blue.y + dy[dir];
-            if(m[ny][nx] == 'O'){
-                blue_fall = true;
-                blue = P(-1, -1);
-                break;
-            }
-            if(nx < 0 || nx >= M || ny < 0 || ny >= N || P(nx, ny) == red || m[ny][nx] != '.') break;
-            blue.x = nx;
-            blue.y = ny;
-        }
-        // red
-        while(true){
-            int nx = red.x + dx[dir];
-            int ny = red.y + dy[dir];
-            if(m[ny][nx] == 'O'){
-                red_fall = true;
-                red = P(-1, -1);
-                break;
-            }
-            if(nx < 0 || nx >= M || ny < 0 || ny >= N || P(nx, ny) == blue ||m[ny][nx] != '.') break;
-            red.x = nx;
-            red.y = ny;
-        }
-    }
-    if(blue_fall == true) return PP(P(-2, -2), P(-2, -2));
-    if(red_fall == true) return PP(P(-1, -1), P(-1, -1));
-    else return PP(red, blue);
+void tilt(int dx, int dy){
+	int first = 0;
+	if(P(pos[R].fi + dy, pos[R].se + dx) == pos[B])
+		first = 1;
+	int over = 0;
+	while(true){
+		for(int i = first; i < 2 && i >= 0; i += 1 + -2 * first)
+		{
+			if((over & 1 << i) != 0) continue;
+			if(m[pos[i].fi + dy][pos[i].se + dx] == '#' || P(pos[i].fi + dy, pos[i].se + dx) == pos[!i])
+			{
+				over |= 1 << i;
+			}
+			else if(m[pos[i].fi + dy][pos[i].se + dx] == 'O')
+			{
+				if (i == R)
+				{
+					pos[0].fi = -1;
+					over |= 1 << i;
+				}
+				else if (i == B)
+				{
+					pos[0].fi = -2;
+					return;
+				}
+			}
+			else
+			{
+				pos[i].fi += dy;
+				pos[i].se += dx;
+			}
+		}
+		if (over == 3)
+			break;
+		
+	}
 }
 
+int simulate(int cnt){
+	int res = INF;
+	if(cnt == 10 || cnt >= ans) return res;
+	P origin[2] = {pos[0], pos[1]};
+	for (int i = 0; i < 4; i++){
+		tilt(dx[i], dy[i]);
+		if(pos[0].fi == -1){
+			ans = min(ans, cnt + 1);
+			return cnt + 1;
+		}
+		else if(pos[0].fi != -2)
+			res = min(res, simulate(cnt + 1));
+		pos[0] = origin[0];
+		pos[1] = origin[1];
+	}
+	return res;
+}
+
+
 int main(){
-    ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
-    cin >> N >> M;
-    for(int i = 0; i < N; i++){
-        for(int j = 0; j < M; j++){
-            cin >> m[i][j];
-            if(m[i][j] == 'R'){
-                m[i][j] = '.';
-                r_x = j, r_y = i;
-            }
-            if(m[i][j] == 'B'){
-                m[i][j] = '.';
-                b_x = j, b_y = i;
-            }
-        }
-    }
-    q.push(PP(P(r_x, r_y), P(b_x, b_y)));
-    for(int i = 0; i < 10 && !q.empty() && ans == -1; i++){
-        int qsize = q.size();
-        for(int j = 0; j < qsize; j++){
-            PP curr = q.front();
-            q.pop();
-            for(int k = 0; k < 4; k++){
-                PP result = proceed(curr, k);
-                if(result.x.x == -1){
-                    ans = i + 1;
-                    break;
-                }else if(result.x.x == -2)
-                    continue;
-                q.push(result);
-            }
-        }
-    }
-    cout << ans;
+    ios::sync_with_stdio(false);
+    cin.tie(0);
+    cout.tie(0);
+	cin >> N >> M;
+	for(int i = 0; i < N; i++)
+	{
+		
+		for(int j = 0; j < M; j++)
+		{
+			cin >> m[i][j];
+			if(m[i][j] == 'R'){
+				pos[R].fi = i;
+				pos[R].se = j;
+			}
+			if(m[i][j] == 'B'){
+				pos[B].fi = i;
+				pos[B].se = j;
+			}
+		}
+	}
+	simulate(0);
+	cout << (ans == INF ? -1 : ans);
+    return 0;
 }
