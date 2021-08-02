@@ -9,8 +9,7 @@ int N, R, M, K, a, b, dest[201];
 double c, cost[101][101][2];
 const double INF = 1e9;
 string str, str1, str2;
-unordered_map<string, int> m;
-unordered_map<string, double> sale;
+unordered_map<string, float> m, sale;
 
 double floyd(bool b){
     for(int k = 0; k < N; k++)
@@ -46,7 +45,7 @@ int main(){
     }
     cin >> K;
     sale["Mugunghwa"] = 0, sale["ITX-Saemaeul"] = 0, sale["ITX-Cheongchun"] = 0;
-    sale["S-Train"] = 0.5, sale["V-Train"] = 0.5;
+    sale["S-Train"] = 0.5f, sale["V-Train"] = 0.5f;
     sale["Taxi"] = 1, sale["Subway"] = 1, sale["Bus"] = 1, sale["Airplane"] = 1, sale["KTX"] = 1;
     for(int i = 0; i < K; i++){
         cin >> str >> str1 >> str2 >> c;
