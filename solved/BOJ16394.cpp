@@ -8,9 +8,12 @@ using namespace std;
 #define endl "\n"
 typedef pair<int, int> ii;
 
+int N;
+
 int main()
 {
     IO;
-
+    cin >> N;
+    cout << N - 1946 << endl;
     return 0;
 }
