@@ -6,6 +6,8 @@ using namespace std;
     cout.tie(0);
 #define ll long long
 #define endl "\n"
+#define fi first
+#define se second
 typedef pair<int, int> ii;
 
 int main()
