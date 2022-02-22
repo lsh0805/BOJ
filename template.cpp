@@ -8,7 +8,7 @@ using namespace std;
 #define endl "\n"
 #define fi first
 #define se second
-typedef pair<int, int> ii;
+typedef pair<int, int> pii;
 
 int main()
 {
