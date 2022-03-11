@@ -1,33 +1,47 @@
 #include <bits/stdc++.h>
-
 using namespace std;
-
-typedef long long ll;
+#define IO                       \
+    ios::sync_with_stdio(false); \
+    cin.tie(0);                  \
+    cout.tie(0);
+#define ll long long
+#define endl "\n"
+#define fi first
+#define se second
+typedef pair<int, int> pii;
 
 string str;
 bool isPalindrome[2501][2501];
 int dp[2501];
 
-int main(){
-    ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
+int solve(int curr) {
+    if (curr == str.length()) return 0;
+    int & ret = dp[curr];
+    if (ret != 0) return ret;
+    ret = 2e9;
+    for (int next = curr + 1; next <= str.length(); next++) {
+        if (isPalindrome[curr][next - 1])
+        ret = min(ret, solve(next) + 1);
+    }
+    return ret;
+}
+
+int main()
+{
+    IO;
     cin >> str;
-    for(int i = 0; i < str.size(); i++)
-        isPalindrome[i][i] = true;
-    for(int i = 0; i < str.size(); i++){
-        for(int j = 0; j  + i < str.size(); j++){
-            if(i == 0) isPalindrome[j][j] = true;
-            else if(i == 1) isPalindrome[j][j + 1] = str[j] == str[j + 1];
-            else isPalindrome[j][j + i] = isPalindrome[j + 1][j + i - 1] && str[j] == str[j + i];
+    for (int i = 0; i < str.length(); i++) {
+        for (int j = 0; i + j < str.length(); j++) {
+            if (str[j] == str[j + i]) {
+                if (i == 0 || i == 1) {
+                    isPalindrome[j][i + j] = true;
+                } else{
+                    isPalindrome[j][i + j] = isPalindrome[j + 1][i + j - 1];
+                } 
+            }
         }
     }
-    dp[0] = 1;
-    for (int i = 1; i < str.size(); i++) {
-        if(isPalindrome[0][i]) dp[i] = 1;
-        else{
-        dp[i] = dp[i - 1] + 1;
-        for(int j = 1; j < i; j++)
-            if(isPalindrome[j][i])dp[i] = min(dp[i], dp[j - 1] + 1);
-        }
-    }
-    cout << dp[str.size() - 1];
+    cout << solve(0);
+
+    return 0;
 }
