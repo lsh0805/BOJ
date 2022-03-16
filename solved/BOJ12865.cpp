@@ -1,27 +1,31 @@
 #include <bits/stdc++.h>
-
 using namespace std;
+#define IO                       \
+    ios::sync_with_stdio(false); \
+    cin.tie(0);                  \
+    cout.tie(0);
+#define ll long long
+#define endl "\n"
+#define fi first
+#define se second
+typedef pair<int, int> pii;
 
-int N, K, w[101], v[101], dp[100001][101];
+int N, K, dp[101][100001], w[101], v[101];
 
-int solve(int curr_w, int curr_idx){
-  int & ret = dp[curr_w][curr_idx];
-  if(ret != 0)
-    return ret;
-  for(int i = curr_idx + 1; i < N; i++)
-    if(curr_w + w[i] <= K)
-      ret = max(ret, solve(curr_w + w[i], i) + v[i]);
-  return ret;
-}
-
-int main(){
-  scanf("%d %d", &N, &K);
-  for(int i = 0; i < N; i++)
-    scanf("%d %d", w + i, v + i);
-  int ans = 0;
-  for(int i = 0; i < N; i++)
-    if(w[i] <= K)
-    ans = max(ans, solve(w[i], i) + v[i]);
-  printf("%d", ans);
-  return 0;
+int main()
+{
+    IO;
+    cin >> N >> K;
+    for (int i = 1; i <= N; i++) {
+        cin >> w[i] >> v[i];
+    }
+    for (int i = 1; i <= N; i++) {
+        for (int j = 1; j <= K; j++) {
+            if (j - w[i] >= 0)
+                dp[i][j] = dp[i - 1][j - w[i]] + v[i];
+            dp[i][j] = max(dp[i][j], dp[i - 1][j]);
+        }
+    }
+    cout << dp[N][K];
+    return 0;
 }
