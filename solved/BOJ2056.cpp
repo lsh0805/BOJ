@@ -1,43 +1,56 @@
 #include <bits/stdc++.h>
-
 using namespace std;
-
+#define IO                       \
+    ios::sync_with_stdio(false); \
+    cin.tie(0);                  \
+    cout.tie(0);
+#define ll long long
+#define endl "\n"
 #define fi first
 #define se second
+typedef pair<int, int> pii;
 
-typedef long long ll;
-typedef pair<int, int> P;
-typedef pair<int, pair<int, int>> P2;
+int N, t[10001], indeg[10001], cnt, num, ans, max_;
+vector<int> edge[10001];
+list<pii> li;
 
-int N, t[10001], indeg[10001], cnt, p, ans, tot[10001];
-vector<vector<int>> adj;
-queue<int> q;
-
-int main(){
-    ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
+int main()
+{
+    IO;
     cin >> N;
-    adj = vector<vector<int>>(N);
-    for(int i = 0; i < N; i++){
-        cin >> t[i] >> indeg[i];
-        tot[i] = t[i];
-        ans = max(ans, tot[i]);
-        for(int j = 0; j < indeg[i]; j++){
-            cin >> p;
-            adj[p - 1].push_back(i);
+    for (int i = 1; i <= N; i++) {
+        cin >> t[i] >> cnt;
+        for (int j = 0; j < cnt; j++) {
+            cin >> num;
+            edge[i].push_back(num);
+            indeg[num]++;
         }
     }
-    for(int i = 0; i < N; i++)
-        if(indeg[i] == 0)
-            q.push(i);
-    while(!q.empty()){
-        int curr = q.front();
-        q.pop();
-        for(int next : adj[curr]){
-            tot[next] = max(tot[next], tot[curr] + t[next]);
-            ans = max(ans, tot[next]);
-            if(--indeg[next] == 0)
-                q.push(next);
+    for (int i = 1; i <= N; i++) {
+        if (indeg[i] == 0) {
+            li.push_back({i, t[i]});
         }
+    }
+    while(!li.empty()) {
+        queue<pii> ready;
+        for (auto it = li.begin(); it != li.end();) {
+            if (--(*it).se == 0) {
+                for (int next : edge[(*it).fi]) {
+                    if (--indeg[next] == 0) {
+                        ready.push({next, t[next]});
+                    }
+                }
+                it = li.erase(it);
+            } else {
+                it++;
+            }
+        }
+        while(!ready.empty()) {
+            li.push_back(ready.front());
+            ready.pop();
+        }
+        ans++;
     }
     cout << ans;
+    return 0;
 }
