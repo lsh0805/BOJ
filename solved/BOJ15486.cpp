@@ -34,13 +34,29 @@ void dbg_out(Head H, Tail... T) {
 
 typedef pair<int, int> pii;
 
-const int MAX_N = 1e5 + 5;
+const int MAX_N = 1500001;
 const ll MOD = 1e9 + 7;
 const ll MOD1 = 998'244'353;
 const ll INF = 1e9;
 const ld EPS = 1e-9;
 
+int N, t[MAX_N], p[MAX_N], dp[MAX_N];
+
+int f(int curr) {
+    if (curr > N + 1) return -2e9;
+    if (curr == N + 1) return 0;
+    int &ret = dp[curr];
+    if (ret != -1) return ret;
+    return ret = max(f(curr + 1), f(curr + t[curr]) + p[curr]);
+}
+
 void solve() {
+    cin >> N;
+    for (int i = 1; i <= N; i++) {
+        cin >> t[i] >> p[i];
+        dp[i] = -1;
+    }
+    cout << f(1);
 }
 
 int main() {
